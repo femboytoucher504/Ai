@@ -1,5 +1,6 @@
 import { storage } from "@vendetta/plugin";
-import { Forms, React } from "@vendetta/ui/components";
+import { Forms } from "@vendetta/ui/components";
+import { React } from "@vendetta/metro/common";
 
 const { FormSection, FormInput, FormRadioRow } = Forms;
 

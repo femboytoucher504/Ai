@@ -1,4 +1,4 @@
-var AIAssistantPlugin=(function(commands,toasts,plugin,components){'use strict';async function askAI(promptText, mode = "ask") {
+var plugin=(function(commands,toasts,plugin,components,common){'use strict';async function askAI(promptText, mode = "ask") {
   const apiKey = plugin.storage.apiKey;
   const provider = plugin.storage.provider || "openai";
   const customModel = plugin.storage.model || "gpt-4o-mini";
@@ -50,14 +50,14 @@ var AIAssistantPlugin=(function(commands,toasts,plugin,components){'use strict';
 }const { FormSection, FormInput, FormRadioRow } = components.Forms;
 
 function Settings() {
-  const [apiKey, setApiKey] = components.React.useState(plugin.storage.apiKey || "");
-  const [provider, setProvider] = components.React.useState(plugin.storage.provider || "openai");
-  const [model, setModel] = components.React.useState(plugin.storage.model || "gpt-4o-mini");
+  const [apiKey, setApiKey] = common.React.useState(plugin.storage.apiKey || "");
+  const [provider, setProvider] = common.React.useState(plugin.storage.provider || "openai");
+  const [model, setModel] = common.React.useState(plugin.storage.model || "gpt-4o-mini");
 
-  return components.React.createElement(
+  return common.React.createElement(
     FormSection,
     { title: "AI Plugin Configuration" },
-    components.React.createElement(FormInput, {
+    common.React.createElement(FormInput, {
       label: "API Key",
       value: apiKey,
       placeholder: "sk-... or Gemini Key",
@@ -66,7 +66,7 @@ function Settings() {
         plugin.storage.apiKey = val;
       }
     }),
-    components.React.createElement(FormInput, {
+    common.React.createElement(FormInput, {
       label: "OpenAI Model Name",
       value: model,
       placeholder: "gpt-4o-mini",
@@ -75,7 +75,7 @@ function Settings() {
         plugin.storage.model = val;
       }
     }),
-    components.React.createElement(FormRadioRow, {
+    common.React.createElement(FormRadioRow, {
       label: "OpenAI API",
       selected: provider === "openai",
       onPress: () => {
@@ -83,7 +83,7 @@ function Settings() {
         plugin.storage.provider = "openai";
       }
     }),
-    components.React.createElement(FormRadioRow, {
+    common.React.createElement(FormRadioRow, {
       label: "Google Gemini API",
       selected: provider === "gemini",
       onPress: () => {
@@ -144,4 +144,5 @@ var index = {
     }
   },
   settings: Settings
-};return index;})(commands,toasts,plugin,components);
+};return index;})(vendetta.commands,vendetta.ui.toasts,vendetta.plugin,vendetta.ui.components,vendetta.metro.common);
+plugin;
