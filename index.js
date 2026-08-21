@@ -3,61 +3,38 @@ import { showToast } from "@vendetta/ui/toasts";
 import { askAI } from "./ai";
 import Settings from "./Settings";
 
-let unregisterCommands = [];
+let unregister = null;
 
 export default {
   onLoad: () => {
     try {
-      const cmd = registerCommand({
+      unregister = registerCommand({
         name: "ai",
         displayName: "ai",
         description: "Run AI prompt, summary, or translation",
         displayDescription: "Run AI prompt, summary, or translation",
         options: [
-          {
-            name: "text",
-            description: "Text or prompt",
-            type: 3,
-            required: true
-          },
-          {
-            name: "action",
-            description: "Mode (ask, summarize, translate)",
-            type: 3,
-            required: false,
-            choices: [
-              { name: "Ask", value: "ask" },
-              { name: "Summarize", value: "summarize" },
-              { name: "Translate", value: "translate" }
-            ]
-          }
+          { name: "text", description: "Text or prompt", type: 3, required: true },
+          { name: "action", description: "Mode (ask, summarize, translate)", type: 3, required: false, choices: [ { name: "Ask", value: "ask" }, { name: "Summarize", value: "summarize" }, { name: "Translate", value: "translate" } ] }
         ],
         execute: async (args) => {
           const textArg = args.find((a) => a.name === "text")?.value;
           const actionArg = args.find((a) => a.name === "action")?.value || "ask";
-
-          showToast("Querying AI...", "info");
-
           try {
             const result = await askAI(textArg, actionArg);
             return { content: `**[AI ${actionArg.toUpperCase()}]:**\n${result}` };
           } catch (err) {
-            showToast(`Error: ${err.message}`, "error");
             return { content: `❌ Error: ${err.message}` };
           }
         }
       });
-
-      if (cmd) unregisterCommands.push(cmd);
+      showToast("AI Assistant Activated!", "success");
     } catch (e) {
-      showToast(`Plugin load failed: ${e.message}`, "error");
+      showToast(`Plugin Crash: ${e.message}`, "error");
     }
   },
   onUnload: () => {
-    for (const unregister of unregisterCommands) {
-      if (typeof unregister === "function") unregister();
-    }
-    unregisterCommands = [];
+    if (typeof unregister === "function") unregister();
   },
   settings: Settings
 };

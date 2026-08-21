@@ -34,12 +34,15 @@ var plugin=(function(commands,toasts,plugin,common){'use strict';async function 
     if (data.error) throw new Error(data.error.message || "OpenAI error");
     return data.choices[0].message.content;
   }
-}const { ScrollView, Text, TextInput } = common.ReactNative;
-
-function Settings() {
+}function Settings() {
   const [geminiKey, setGeminiKey] = common.React.useState(plugin.storage.geminiKey || "");
   const [openAiKey, setOpenAiKey] = common.React.useState(plugin.storage.openAiKey || "");
   const [provider, setProvider] = common.React.useState(plugin.storage.provider || "gemini");
+
+  // Load components only when settings menu is actually opened
+  const ScrollView = common.ReactNative.ScrollView;
+  const Text = common.ReactNative.Text;
+  const TextInput = common.ReactNative.TextInput;
 
   const labelStyle = { color: "#F2F3F5", fontWeight: "bold", marginBottom: 8, marginTop: 16, fontSize: 16 };
   const inputStyle = { backgroundColor: "#1E1F22", color: "#DBDEE1", padding: 12, borderRadius: 8, fontSize: 16, borderWidth: 1, borderColor: "#000000" };
@@ -54,10 +57,7 @@ function Settings() {
       placeholder: "AIzaSy...",
       placeholderTextColor: "#80848E",
       value: geminiKey,
-      onChangeText: (text) => {
-        setGeminiKey(text);
-        plugin.storage.geminiKey = text;
-      }
+      onChangeText: (text) => { setGeminiKey(text); plugin.storage.geminiKey = text; }
     }),
 
     common.React.createElement(Text, { style: labelStyle }, "OpenAI API Key (Optional)"),
@@ -66,10 +66,7 @@ function Settings() {
       placeholder: "sk-...",
       placeholderTextColor: "#80848E",
       value: openAiKey,
-      onChangeText: (text) => {
-        setOpenAiKey(text);
-        plugin.storage.openAiKey = text;
-      }
+      onChangeText: (text) => { setOpenAiKey(text); plugin.storage.openAiKey = text; }
     }),
 
     common.React.createElement(Text, { style: labelStyle }, "Active AI (Type 'gemini' or 'openai')"),
@@ -78,67 +75,41 @@ function Settings() {
       placeholder: "gemini",
       placeholderTextColor: "#80848E",
       value: provider,
-      onChangeText: (text) => {
-        setProvider(text.toLowerCase());
-        plugin.storage.provider = text.toLowerCase();
-      }
+      onChangeText: (text) => { setProvider(text.toLowerCase()); plugin.storage.provider = text.toLowerCase(); }
     })
   );
-}let unregisterCommands = [];
+}let unregister = null;
 
 var index = {
   onLoad: () => {
     try {
-      const cmd = commands.registerCommand({
+      unregister = commands.registerCommand({
         name: "ai",
         displayName: "ai",
         description: "Run AI prompt, summary, or translation",
         displayDescription: "Run AI prompt, summary, or translation",
         options: [
-          {
-            name: "text",
-            description: "Text or prompt",
-            type: 3,
-            required: true
-          },
-          {
-            name: "action",
-            description: "Mode (ask, summarize, translate)",
-            type: 3,
-            required: false,
-            choices: [
-              { name: "Ask", value: "ask" },
-              { name: "Summarize", value: "summarize" },
-              { name: "Translate", value: "translate" }
-            ]
-          }
+          { name: "text", description: "Text or prompt", type: 3, required: true },
+          { name: "action", description: "Mode (ask, summarize, translate)", type: 3, required: false, choices: [ { name: "Ask", value: "ask" }, { name: "Summarize", value: "summarize" }, { name: "Translate", value: "translate" } ] }
         ],
         execute: async (args) => {
           const textArg = args.find((a) => a.name === "text")?.value;
           const actionArg = args.find((a) => a.name === "action")?.value || "ask";
-
-          toasts.showToast("Querying AI...", "info");
-
           try {
             const result = await askAI(textArg, actionArg);
             return { content: `**[AI ${actionArg.toUpperCase()}]:**\n${result}` };
           } catch (err) {
-            toasts.showToast(`Error: ${err.message}`, "error");
             return { content: `❌ Error: ${err.message}` };
           }
         }
       });
-
-      if (cmd) unregisterCommands.push(cmd);
+      toasts.showToast("AI Assistant Activated!", "success");
     } catch (e) {
-      toasts.showToast(`Plugin load failed: ${e.message}`, "error");
+      toasts.showToast(`Plugin Crash: ${e.message}`, "error");
     }
   },
   onUnload: () => {
-    for (const unregister of unregisterCommands) {
-      if (typeof unregister === "function") unregister();
-    }
-    unregisterCommands = [];
+    if (typeof unregister === "function") unregister();
   },
   settings: Settings
 };return index;})(vendetta.commands,vendetta.ui.toasts,vendetta.plugin,vendetta.metro.common);

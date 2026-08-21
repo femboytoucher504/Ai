@@ -1,12 +1,15 @@
 import { storage } from "@vendetta/plugin";
 import { React, ReactNative } from "@vendetta/metro/common";
 
-const { ScrollView, Text, TextInput } = ReactNative;
-
 export default function Settings() {
   const [geminiKey, setGeminiKey] = React.useState(storage.geminiKey || "");
   const [openAiKey, setOpenAiKey] = React.useState(storage.openAiKey || "");
   const [provider, setProvider] = React.useState(storage.provider || "gemini");
+
+  // Load components only when settings menu is actually opened
+  const ScrollView = ReactNative.ScrollView;
+  const Text = ReactNative.Text;
+  const TextInput = ReactNative.TextInput;
 
   const labelStyle = { color: "#F2F3F5", fontWeight: "bold", marginBottom: 8, marginTop: 16, fontSize: 16 };
   const inputStyle = { backgroundColor: "#1E1F22", color: "#DBDEE1", padding: 12, borderRadius: 8, fontSize: 16, borderWidth: 1, borderColor: "#000000" };
@@ -21,10 +24,7 @@ export default function Settings() {
       placeholder: "AIzaSy...",
       placeholderTextColor: "#80848E",
       value: geminiKey,
-      onChangeText: (text) => {
-        setGeminiKey(text);
-        storage.geminiKey = text;
-      }
+      onChangeText: (text) => { setGeminiKey(text); storage.geminiKey = text; }
     }),
 
     React.createElement(Text, { style: labelStyle }, "OpenAI API Key (Optional)"),
@@ -33,10 +33,7 @@ export default function Settings() {
       placeholder: "sk-...",
       placeholderTextColor: "#80848E",
       value: openAiKey,
-      onChangeText: (text) => {
-        setOpenAiKey(text);
-        storage.openAiKey = text;
-      }
+      onChangeText: (text) => { setOpenAiKey(text); storage.openAiKey = text; }
     }),
 
     React.createElement(Text, { style: labelStyle }, "Active AI (Type 'gemini' or 'openai')"),
@@ -45,10 +42,7 @@ export default function Settings() {
       placeholder: "gemini",
       placeholderTextColor: "#80848E",
       value: provider,
-      onChangeText: (text) => {
-        setProvider(text.toLowerCase());
-        storage.provider = text.toLowerCase();
-      }
+      onChangeText: (text) => { setProvider(text.toLowerCase()); storage.provider = text.toLowerCase(); }
     })
   );
 }
