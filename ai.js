@@ -6,10 +6,10 @@ export async function askAI(promptText, mode = "ask") {
   const customModel = storage.model || "gpt-4o-mini";
 
   if (!apiKey) {
-    throw new Error("Missing API Key! Please set it in Plugin Settings.");
+    throw new Error("Missing API Key! Set it in Plugin Settings.");
   }
 
-  let systemPrompt = "You are a helpful AI assistant integrated into Discord.";
+  let systemPrompt = "You are a helpful AI assistant inside Discord.";
   if (mode === "summarize") {
     systemPrompt = "Summarize the following text concisely:";
   } else if (mode === "translate") {
@@ -27,7 +27,7 @@ export async function askAI(promptText, mode = "ask") {
     });
 
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(data.error.message || "Gemini API error");
     return data.candidates[0].content.parts[0].text;
   } else {
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -46,7 +46,7 @@ export async function askAI(promptText, mode = "ask") {
     });
 
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(data.error.message || "OpenAI API error");
     return data.choices[0].message.content;
   }
 }
