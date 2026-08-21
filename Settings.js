@@ -1,42 +1,53 @@
 import { storage } from "@vendetta/plugin";
-import { Forms } from "@vendetta/ui/components";
-import { React } from "@vendetta/metro/common";
+import { React, ReactNative } from "@vendetta/metro/common";
 
-const { FormSection, FormInput } = Forms;
+const { ScrollView, Text, TextInput } = ReactNative;
 
 export default function Settings() {
-  const [openAiKey, setOpenAiKey] = React.useState(storage.openAiKey || "");
   const [geminiKey, setGeminiKey] = React.useState(storage.geminiKey || "");
+  const [openAiKey, setOpenAiKey] = React.useState(storage.openAiKey || "");
   const [provider, setProvider] = React.useState(storage.provider || "gemini");
 
+  const labelStyle = { color: "#F2F3F5", fontWeight: "bold", marginBottom: 8, marginTop: 16, fontSize: 16 };
+  const inputStyle = { backgroundColor: "#1E1F22", color: "#DBDEE1", padding: 12, borderRadius: 8, fontSize: 16, borderWidth: 1, borderColor: "#000000" };
+
   return React.createElement(
-    FormSection,
-    { title: "AI Plugin Configuration" },
-    React.createElement(FormInput, {
-      label: "Google Gemini API Key",
+    ScrollView,
+    { style: { padding: 16, backgroundColor: "#313338", height: "100%" } },
+
+    React.createElement(Text, { style: labelStyle }, "Google Gemini API Key"),
+    React.createElement(TextInput, {
+      style: inputStyle,
+      placeholder: "AIzaSy...",
+      placeholderTextColor: "#80848E",
       value: geminiKey,
-      placeholder: "AIza...",
-      onChange: (val) => {
-        setGeminiKey(val);
-        storage.geminiKey = val;
+      onChangeText: (text) => {
+        setGeminiKey(text);
+        storage.geminiKey = text;
       }
     }),
-    React.createElement(FormInput, {
-      label: "OpenAI API Key (Optional)",
-      value: openAiKey,
+
+    React.createElement(Text, { style: labelStyle }, "OpenAI API Key (Optional)"),
+    React.createElement(TextInput, {
+      style: inputStyle,
       placeholder: "sk-...",
-      onChange: (val) => {
-        setOpenAiKey(val);
-        storage.openAiKey = val;
+      placeholderTextColor: "#80848E",
+      value: openAiKey,
+      onChangeText: (text) => {
+        setOpenAiKey(text);
+        storage.openAiKey = text;
       }
     }),
-    React.createElement(FormInput, {
-      label: "Active Provider (Type 'gemini' or 'openai')",
-      value: provider,
+
+    React.createElement(Text, { style: labelStyle }, "Active AI (Type 'gemini' or 'openai')"),
+    React.createElement(TextInput, {
+      style: inputStyle,
       placeholder: "gemini",
-      onChange: (val) => {
-        setProvider(val.toLowerCase());
-        storage.provider = val.toLowerCase();
+      placeholderTextColor: "#80848E",
+      value: provider,
+      onChangeText: (text) => {
+        setProvider(text.toLowerCase());
+        storage.provider = text.toLowerCase();
       }
     })
   );

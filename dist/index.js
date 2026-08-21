@@ -1,4 +1,4 @@
-var plugin=(function(commands,toasts,plugin,components,common){'use strict';async function askAI(promptText, mode = "ask") {
+var plugin=(function(commands,toasts,plugin,common){'use strict';async function askAI(promptText, mode = "ask") {
   const provider = plugin.storage.provider || "gemini";
   const geminiKey = plugin.storage.geminiKey;
   const openAiKey = plugin.storage.openAiKey;
@@ -34,41 +34,53 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';asyn
     if (data.error) throw new Error(data.error.message || "OpenAI error");
     return data.choices[0].message.content;
   }
-}const { FormSection, FormInput } = components.Forms;
+}const { ScrollView, Text, TextInput } = common.ReactNative;
 
 function Settings() {
-  const [openAiKey, setOpenAiKey] = common.React.useState(plugin.storage.openAiKey || "");
   const [geminiKey, setGeminiKey] = common.React.useState(plugin.storage.geminiKey || "");
+  const [openAiKey, setOpenAiKey] = common.React.useState(plugin.storage.openAiKey || "");
   const [provider, setProvider] = common.React.useState(plugin.storage.provider || "gemini");
 
+  const labelStyle = { color: "#F2F3F5", fontWeight: "bold", marginBottom: 8, marginTop: 16, fontSize: 16 };
+  const inputStyle = { backgroundColor: "#1E1F22", color: "#DBDEE1", padding: 12, borderRadius: 8, fontSize: 16, borderWidth: 1, borderColor: "#000000" };
+
   return common.React.createElement(
-    FormSection,
-    { title: "AI Plugin Configuration" },
-    common.React.createElement(FormInput, {
-      label: "Google Gemini API Key",
+    ScrollView,
+    { style: { padding: 16, backgroundColor: "#313338", height: "100%" } },
+
+    common.React.createElement(Text, { style: labelStyle }, "Google Gemini API Key"),
+    common.React.createElement(TextInput, {
+      style: inputStyle,
+      placeholder: "AIzaSy...",
+      placeholderTextColor: "#80848E",
       value: geminiKey,
-      placeholder: "AIza...",
-      onChange: (val) => {
-        setGeminiKey(val);
-        plugin.storage.geminiKey = val;
+      onChangeText: (text) => {
+        setGeminiKey(text);
+        plugin.storage.geminiKey = text;
       }
     }),
-    common.React.createElement(FormInput, {
-      label: "OpenAI API Key (Optional)",
-      value: openAiKey,
+
+    common.React.createElement(Text, { style: labelStyle }, "OpenAI API Key (Optional)"),
+    common.React.createElement(TextInput, {
+      style: inputStyle,
       placeholder: "sk-...",
-      onChange: (val) => {
-        setOpenAiKey(val);
-        plugin.storage.openAiKey = val;
+      placeholderTextColor: "#80848E",
+      value: openAiKey,
+      onChangeText: (text) => {
+        setOpenAiKey(text);
+        plugin.storage.openAiKey = text;
       }
     }),
-    common.React.createElement(FormInput, {
-      label: "Active Provider (Type 'gemini' or 'openai')",
-      value: provider,
+
+    common.React.createElement(Text, { style: labelStyle }, "Active AI (Type 'gemini' or 'openai')"),
+    common.React.createElement(TextInput, {
+      style: inputStyle,
       placeholder: "gemini",
-      onChange: (val) => {
-        setProvider(val.toLowerCase());
-        plugin.storage.provider = val.toLowerCase();
+      placeholderTextColor: "#80848E",
+      value: provider,
+      onChangeText: (text) => {
+        setProvider(text.toLowerCase());
+        plugin.storage.provider = text.toLowerCase();
       }
     })
   );
@@ -129,5 +141,5 @@ var index = {
     unregisterCommands = [];
   },
   settings: Settings
-};return index;})(vendetta.commands,vendetta.ui.toasts,vendetta.plugin,vendetta.ui.components,vendetta.metro.common);
+};return index;})(vendetta.commands,vendetta.ui.toasts,vendetta.plugin,vendetta.metro.common);
 plugin;
