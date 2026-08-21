@@ -2,40 +2,41 @@ import { storage } from "@vendetta/plugin";
 import { Forms } from "@vendetta/ui/components";
 import { React } from "@vendetta/metro/common";
 
-const { FormSection, FormInput, FormSwitchRow } = Forms;
+const { FormSection, FormInput } = Forms;
 
 export default function Settings() {
-  const [apiKey, setApiKey] = React.useState(storage.apiKey || "");
-  const [useGemini, setUseGemini] = React.useState(storage.provider === "gemini");
-  const [model, setModel] = React.useState(storage.model || "gpt-4o-mini");
+  const [openAiKey, setOpenAiKey] = React.useState(storage.openAiKey || "");
+  const [geminiKey, setGeminiKey] = React.useState(storage.geminiKey || "");
+  const [provider, setProvider] = React.useState(storage.provider || "gemini");
 
   return React.createElement(
     FormSection,
     { title: "AI Plugin Configuration" },
     React.createElement(FormInput, {
-      label: "API Key",
-      value: apiKey,
-      placeholder: "OpenAI or Gemini API Key",
+      label: "Google Gemini API Key",
+      value: geminiKey,
+      placeholder: "AIza...",
       onChange: (val) => {
-        setApiKey(val);
-        storage.apiKey = val;
+        setGeminiKey(val);
+        storage.geminiKey = val;
       }
     }),
     React.createElement(FormInput, {
-      label: "OpenAI Model Name",
-      value: model,
-      placeholder: "gpt-4o-mini",
+      label: "OpenAI API Key (Optional)",
+      value: openAiKey,
+      placeholder: "sk-...",
       onChange: (val) => {
-        setModel(val);
-        storage.model = val;
+        setOpenAiKey(val);
+        storage.openAiKey = val;
       }
     }),
-    React.createElement(FormSwitchRow, {
-      label: "Use Google Gemini instead of OpenAI",
-      value: useGemini,
-      onValueChange: (val) => {
-        setUseGemini(val);
-        storage.provider = val ? "gemini" : "openai";
+    React.createElement(FormInput, {
+      label: "Active Provider (Type 'gemini' or 'openai')",
+      value: provider,
+      placeholder: "gemini",
+      onChange: (val) => {
+        setProvider(val.toLowerCase());
+        storage.provider = val.toLowerCase();
       }
     })
   );
