@@ -8,6 +8,7 @@ export default {
     file: "dist/index.js",
     format: "iife",
     name: "plugin",
+    exports: "default",
     globals: (id) => {
       if (id.startsWith("@vendetta/")) {
         return "vendetta." + id.slice(10).replace(/\//g, ".");
