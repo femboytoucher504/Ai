@@ -1,7 +1,7 @@
-var plugin=(function(plugin$1){'use strict';async function askAI(promptText, mode = "ask") {
-  const provider = plugin$1.storage.provider || "gemini";
-  const geminiKey = plugin$1.storage.geminiKey;
-  const openAiKey = plugin$1.storage.openAiKey;
+'use strict';var commands=require('@vendetta/commands'),toasts=require('@vendetta/ui/toasts'),plugin=require('@vendetta/plugin'),common=require('@vendetta/metro/common');async function askAI(promptText, mode = "ask") {
+  const provider = plugin.storage.provider || "gemini";
+  const geminiKey = plugin.storage.geminiKey;
+  const openAiKey = plugin.storage.openAiKey;
 
   let systemPrompt = "You are a helpful AI assistant inside Discord.";
   if (mode === "summarize") systemPrompt = "Summarize the following text concisely:";
@@ -34,15 +34,53 @@ var plugin=(function(plugin$1){'use strict';async function askAI(promptText, mod
     if (data.error) throw new Error(data.error.message || "OpenAI error");
     return data.choices[0].message.content;
   }
+}const { ScrollView, Text, TextInput } = common.ReactNative;
+
+function Settings() {
+  const [geminiKey, setGeminiKey] = common.React.useState(plugin.storage.geminiKey || "");
+  const [openAiKey, setOpenAiKey] = common.React.useState(plugin.storage.openAiKey || "");
+  const [provider, setProvider] = common.React.useState(plugin.storage.provider || "gemini");
+
+  const labelStyle = { color: "#F2F3F5", fontWeight: "bold", marginBottom: 8, marginTop: 16, fontSize: 16 };
+  const inputStyle = { backgroundColor: "#1E1F22", color: "#DBDEE1", padding: 12, borderRadius: 8, fontSize: 16, borderWidth: 1, borderColor: "#000000" };
+
+  return common.React.createElement(
+    ScrollView,
+    { style: { padding: 16, backgroundColor: "#313338", height: "100%" } },
+
+    common.React.createElement(Text, { style: labelStyle }, "Google Gemini API Key"),
+    common.React.createElement(TextInput, {
+      style: inputStyle,
+      placeholder: "AIzaSy...",
+      placeholderTextColor: "#80848E",
+      value: geminiKey,
+      onChangeText: (text) => { setGeminiKey(text); plugin.storage.geminiKey = text; }
+    }),
+
+    common.React.createElement(Text, { style: labelStyle }, "OpenAI API Key (Optional)"),
+    common.React.createElement(TextInput, {
+      style: inputStyle,
+      placeholder: "sk-...",
+      placeholderTextColor: "#80848E",
+      value: openAiKey,
+      onChangeText: (text) => { setOpenAiKey(text); plugin.storage.openAiKey = text; }
+    }),
+
+    common.React.createElement(Text, { style: labelStyle }, "Active AI (Type 'gemini' or 'openai')"),
+    common.React.createElement(TextInput, {
+      style: inputStyle,
+      placeholder: "gemini",
+      placeholderTextColor: "#80848E",
+      value: provider,
+      onChangeText: (text) => { setProvider(text.toLowerCase()); plugin.storage.provider = text.toLowerCase(); }
+    })
+  );
 }let unregister = null;
 
-const plugin = {
+var index = {
   onLoad: () => {
     try {
-      const vendetta = window.vendetta || globalThis.vendetta;
-      if (!vendetta || !vendetta.commands) return;
-
-      unregister = vendetta.commands.registerCommand({
+      unregister = commands.registerCommand({
         name: "ai",
         displayName: "ai",
         description: "Run AI prompt, summary, or translation",
@@ -62,12 +100,13 @@ const plugin = {
           }
         }
       });
+      toasts.showToast("AI Assistant Loaded!", "success");
     } catch (e) {
-      console.error("[AI-Plugin] Registration error:", e);
+      toasts.showToast(`Load Error: ${e.message}`, "error");
     }
   },
   onUnload: () => {
     if (typeof unregister === "function") unregister();
-  }
-};return plugin;})(vendetta.plugin);
-plugin;
+  },
+  settings: Settings
+};module.exports=index;

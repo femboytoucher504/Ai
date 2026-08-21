@@ -1,14 +1,14 @@
+import { registerCommand } from "@vendetta/commands";
+import { showToast } from "@vendetta/ui/toasts";
 import { askAI } from "./ai";
+import Settings from "./Settings";
 
 let unregister = null;
 
-const plugin = {
+export default {
   onLoad: () => {
     try {
-      const vendetta = window.vendetta || globalThis.vendetta;
-      if (!vendetta || !vendetta.commands) return;
-
-      unregister = vendetta.commands.registerCommand({
+      unregister = registerCommand({
         name: "ai",
         displayName: "ai",
         description: "Run AI prompt, summary, or translation",
@@ -28,13 +28,13 @@ const plugin = {
           }
         }
       });
+      showToast("AI Assistant Loaded!", "success");
     } catch (e) {
-      console.error("[AI-Plugin] Registration error:", e);
+      showToast(`Load Error: ${e.message}`, "error");
     }
   },
   onUnload: () => {
     if (typeof unregister === "function") unregister();
-  }
+  },
+  settings: Settings
 };
-
-export default plugin;

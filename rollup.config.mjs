@@ -6,15 +6,8 @@ export default {
   external: (id) => id.startsWith("@vendetta"),
   output: {
     file: "dist/index.js",
-    format: "iife",
-    name: "plugin",
+    format: "cjs",
     exports: "default",
-    globals: (id) => {
-      if (id.startsWith("@vendetta/")) {
-        return "vendetta." + id.slice(10).replace(/\//g, ".");
-      }
-    },
-    footer: "plugin;",
     compact: true
   },
   plugins: [resolve(), commonjs()]

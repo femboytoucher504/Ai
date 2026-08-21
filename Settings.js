@@ -1,15 +1,12 @@
 import { storage } from "@vendetta/plugin";
 import { React, ReactNative } from "@vendetta/metro/common";
 
+const { ScrollView, Text, TextInput } = ReactNative;
+
 export default function Settings() {
   const [geminiKey, setGeminiKey] = React.useState(storage.geminiKey || "");
   const [openAiKey, setOpenAiKey] = React.useState(storage.openAiKey || "");
   const [provider, setProvider] = React.useState(storage.provider || "gemini");
-
-  // Load components only when settings menu is actually opened
-  const ScrollView = ReactNative.ScrollView;
-  const Text = ReactNative.Text;
-  const TextInput = ReactNative.TextInput;
 
   const labelStyle = { color: "#F2F3F5", fontWeight: "bold", marginBottom: 8, marginTop: 16, fontSize: 16 };
   const inputStyle = { backgroundColor: "#1E1F22", color: "#DBDEE1", padding: 12, borderRadius: 8, fontSize: 16, borderWidth: 1, borderColor: "#000000" };
