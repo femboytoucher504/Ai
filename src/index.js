@@ -3,10 +3,10 @@ import { showToast } from "@vendetta/ui/toasts";
 import { askAI } from "./ai";
 import Settings from "./Settings";
 
-var unregister = null;
+let unregister = null;
 
 export default {
-  onLoad: function() {
+  onLoad: () => {
     try {
       unregister = registerCommand({
         name: "ai",
@@ -17,30 +17,30 @@ export default {
           { name: "text", description: "Text or prompt", type: 3, required: true },
           { name: "action", description: "Mode (ask, summarize, translate)", type: 3, required: false, choices: [ { name: "Ask", value: "ask" }, { name: "Summarize", value: "summarize" }, { name: "Translate", value: "translate" } ] }
         ],
-        execute: function(args) {
-          var textArg = "";
-          var actionArg = "ask";
+        execute: (args) => {
+          let textArg = "";
+          let actionArg = "ask";
           if (args && args.length) {
-            for (var i = 0; i < args.length; i++) {
+            for (let i = 0; i < args.length; i++) {
               if (args[i].name === "text") textArg = args[i].value;
               if (args[i].name === "action") actionArg = args[i].value;
             }
           }
           return askAI(textArg, actionArg)
-            .then(function(result) {
+            .then((result) => {
               return { content: "**[AI " + actionArg.toUpperCase() + "]:**\n" + result };
             })
-            .catch(function(err) {
+            .catch((err) => {
               return { content: "❌ Error: " + err.message };
             });
         }
       });
-      if (showToast) showToast("AI Assistant Loaded!", "success");
+      if (typeof showToast === "function") showToast("AI Assistant Loaded!", "success");
     } catch (e) {
-      if (showToast) showToast("Load Error: " + e.message, "error");
+      if (typeof showToast === "function") showToast("Load Error: " + e.message, "error");
     }
   },
-  onUnload: function() {
+  onUnload: () => {
     if (typeof unregister === "function") unregister();
   },
   settings: Settings

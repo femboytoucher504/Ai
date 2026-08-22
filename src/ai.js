@@ -11,7 +11,7 @@ export function askAI(promptText, mode) {
   if (mode === "translate") systemPrompt = "Translate the following text clearly:";
 
   if (provider === "gemini") {
-    if (!geminiKey) return Promise.reject(new Error("Missing Gemini API Key! Configure it in Settings."));
+    if (!geminiKey) return Promise.reject(new Error("Missing Gemini API Key in Settings!"));
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiKey;
     return fetch(url, {
       method: "POST",
@@ -20,13 +20,13 @@ export function askAI(promptText, mode) {
         contents: [{ parts: [{ text: systemPrompt + "\n\n" + promptText }] }]
       })
     })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
+    .then((res) => res.json())
+    .then((data) => {
       if (data.error) throw new Error(data.error.message || "Gemini error");
       return data.candidates[0].content.parts[0].text;
     });
   } else {
-    if (!openAiKey) return Promise.reject(new Error("Missing OpenAI API Key! Configure it in Settings."));
+    if (!openAiKey) return Promise.reject(new Error("Missing OpenAI API Key in Settings!"));
     return fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + openAiKey },
@@ -35,8 +35,8 @@ export function askAI(promptText, mode) {
         messages: [{ role: "system", content: systemPrompt }, { role: "user", content: promptText }]
       })
     })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
+    .then((res) => res.json())
+    .then((data) => {
       if (data.error) throw new Error(data.error.message || "OpenAI error");
       return data.choices[0].message.content;
     });

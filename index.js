@@ -9,7 +9,7 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';func
   if (mode === "translate") systemPrompt = "Translate the following text clearly:";
 
   if (provider === "gemini") {
-    if (!geminiKey) return Promise.reject(new Error("Missing Gemini API Key! Configure it in Settings."));
+    if (!geminiKey) return Promise.reject(new Error("Missing Gemini API Key in Settings!"));
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + geminiKey;
     return fetch(url, {
       method: "POST",
@@ -18,13 +18,13 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';func
         contents: [{ parts: [{ text: systemPrompt + "\n\n" + promptText }] }]
       })
     })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
+    .then((res) => res.json())
+    .then((data) => {
       if (data.error) throw new Error(data.error.message || "Gemini error");
       return data.candidates[0].content.parts[0].text;
     });
   } else {
-    if (!openAiKey) return Promise.reject(new Error("Missing OpenAI API Key! Configure it in Settings."));
+    if (!openAiKey) return Promise.reject(new Error("Missing OpenAI API Key in Settings!"));
     return fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": "Bearer " + openAiKey },
@@ -33,19 +33,19 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';func
         messages: [{ role: "system", content: systemPrompt }, { role: "user", content: promptText }]
       })
     })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
+    .then((res) => res.json())
+    .then((data) => {
       if (data.error) throw new Error(data.error.message || "OpenAI error");
       return data.choices[0].message.content;
     });
   }
 }function Settings() {
-  var geminiKey = plugin.storage.geminiKey || "";
-  var openAiKey = plugin.storage.openAiKey || "";
-  var provider = plugin.storage.provider || "gemini";
+  const FormSection = components.Forms?.FormSection || (({ children }) => children);
+  const FormInput = components.Forms?.FormInput || (() => null);
 
-  var FormSection = (components.Forms && components.Forms.FormSection) ? components.Forms.FormSection : function(p) { return p.children; };
-  var FormInput = (components.Forms && components.Forms.FormInput) ? components.Forms.FormInput : function() { return null; };
+  const [geminiKey, setGeminiKey] = common.React.useState(plugin.storage.geminiKey || "");
+  const [openAiKey, setOpenAiKey] = common.React.useState(plugin.storage.openAiKey || "");
+  const [provider, setProvider] = common.React.useState(plugin.storage.provider || "gemini");
 
   return common.React.createElement(
     FormSection,
@@ -54,7 +54,8 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';func
       label: "Google Gemini API Key",
       value: geminiKey,
       placeholder: "AIzaSy...",
-      onChange: function(val) {
+      onChange: (val) => {
+        setGeminiKey(val);
         plugin.storage.geminiKey = val;
       }
     }),
@@ -62,7 +63,8 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';func
       label: "OpenAI API Key (Optional)",
       value: openAiKey,
       placeholder: "sk-...",
-      onChange: function(val) {
+      onChange: (val) => {
+        setOpenAiKey(val);
         plugin.storage.openAiKey = val;
       }
     }),
@@ -70,15 +72,17 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';func
       label: "Active Provider (gemini or openai)",
       value: provider,
       placeholder: "gemini",
-      onChange: function(val) {
-        plugin.storage.provider = val ? val.toLowerCase() : "gemini";
+      onChange: (val) => {
+        const p = val ? val.toLowerCase() : "gemini";
+        setProvider(p);
+        plugin.storage.provider = p;
       }
     })
   );
-}var unregister = null;
+}let unregister = null;
 
 var index = {
-  onLoad: function() {
+  onLoad: () => {
     try {
       unregister = commands.registerCommand({
         name: "ai",
@@ -89,32 +93,32 @@ var index = {
           { name: "text", description: "Text or prompt", type: 3, required: true },
           { name: "action", description: "Mode (ask, summarize, translate)", type: 3, required: false, choices: [ { name: "Ask", value: "ask" }, { name: "Summarize", value: "summarize" }, { name: "Translate", value: "translate" } ] }
         ],
-        execute: function(args) {
-          var textArg = "";
-          var actionArg = "ask";
+        execute: (args) => {
+          let textArg = "";
+          let actionArg = "ask";
           if (args && args.length) {
-            for (var i = 0; i < args.length; i++) {
+            for (let i = 0; i < args.length; i++) {
               if (args[i].name === "text") textArg = args[i].value;
               if (args[i].name === "action") actionArg = args[i].value;
             }
           }
           return askAI(textArg, actionArg)
-            .then(function(result) {
+            .then((result) => {
               return { content: "**[AI " + actionArg.toUpperCase() + "]:**\n" + result };
             })
-            .catch(function(err) {
+            .catch((err) => {
               return { content: "❌ Error: " + err.message };
             });
         }
       });
-      if (toasts.showToast) toasts.showToast("AI Assistant Loaded!", "success");
+      if (typeof toasts.showToast === "function") toasts.showToast("AI Assistant Loaded!", "success");
     } catch (e) {
-      if (toasts.showToast) toasts.showToast("Load Error: " + e.message, "error");
+      if (typeof toasts.showToast === "function") toasts.showToast("Load Error: " + e.message, "error");
     }
   },
-  onUnload: function() {
+  onUnload: () => {
     if (typeof unregister === "function") unregister();
   },
   settings: Settings
-};return index;})(commands,toasts,plugin,components,common);
+};return index;})(vendetta.commands,vendetta.ui.toasts,vendetta.plugin,vendetta.ui.components,vendetta.metro.common);
 plugin;
