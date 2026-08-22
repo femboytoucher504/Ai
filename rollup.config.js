@@ -7,7 +7,7 @@ export default {
     file: 'index.js',
     format: 'iife',
     name: 'plugin',
-    footer: 'plugin;'
+    footer: 'module.exports = plugin;'
   },
   plugins: [nodeResolve(), commonjs()]
 };
