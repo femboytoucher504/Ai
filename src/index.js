@@ -6,7 +6,7 @@ import Settings from "./Settings";
 let unregister = null;
 
 export default {
-  onLoad: () => {
+  onLoad: function() {
     try {
       unregister = registerCommand({
         name: "ai",
@@ -17,23 +17,24 @@ export default {
           { name: "text", description: "Text or prompt", type: 3, required: true },
           { name: "action", description: "Mode (ask, summarize, translate)", type: 3, required: false, choices: [ { name: "Ask", value: "ask" }, { name: "Summarize", value: "summarize" }, { name: "Translate", value: "translate" } ] }
         ],
-        execute: async (args) => {
-          const textArg = args.find((a) => a.name === "text")?.value;
-          const actionArg = args.find((a) => a.name === "action")?.value || "ask";
-          try {
-            const result = await askAI(textArg, actionArg);
-            return { content: `**[AI ${actionArg.toUpperCase()}]:**\n${result}` };
-          } catch (err) {
-            return { content: `❌ Error: ${err.message}` };
-          }
+        execute: function(args) {
+          const textArg = args.find(function(a) { return a.name === "text"; })?.value;
+          const actionArg = args.find(function(a) { return a.name === "action"; })?.value || "ask";
+          return askAI(textArg, actionArg)
+            .then(function(result) {
+              return { content: "**[AI " + actionArg.toUpperCase() + "]:**\n" + result };
+            })
+            .catch(function(err) {
+              return { content: "❌ Error: " + err.message };
+            });
         }
       });
       showToast("AI Assistant Loaded!", "success");
     } catch (e) {
-      showToast(`Load Error: ${e.message}`, "error");
+      showToast("Load Error: " + e.message, "error");
     }
   },
-  onUnload: () => {
+  onUnload: function() {
     if (typeof unregister === "function") unregister();
   },
   settings: Settings
