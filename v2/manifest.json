@@ -1,0 +1,7 @@
+{
+  "name": "Minimal Test",
+  "description": "Bare minimum test plugin",
+  "authors": [{ "name": "Hasan", "id": "0" }],
+  "main": "index.js",
+  "hash": "93ac29e0e41a2ae493b62bda340b9312e3603d7afda5b713df57e61d50bbe13b"
+}
