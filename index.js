@@ -39,12 +39,13 @@ var plugin=(function(commands,toasts,plugin,components,common){'use strict';func
       return data.choices[0].message.content;
     });
   }
-}const { FormSection, FormInput } = components.Forms;
+}function Settings() {
+  var geminiKey = plugin.storage.geminiKey || "";
+  var openAiKey = plugin.storage.openAiKey || "";
+  var provider = plugin.storage.provider || "gemini";
 
-function Settings() {
-  const [geminiKey, setGeminiKey] = common.React.useState(plugin.storage.geminiKey || "");
-  const [openAiKey, setOpenAiKey] = common.React.useState(plugin.storage.openAiKey || "");
-  const [provider, setProvider] = common.React.useState(plugin.storage.provider || "gemini");
+  var FormSection = (components.Forms && components.Forms.FormSection) ? components.Forms.FormSection : function(p) { return p.children; };
+  var FormInput = (components.Forms && components.Forms.FormInput) ? components.Forms.FormInput : function() { return null; };
 
   return common.React.createElement(
     FormSection,
@@ -53,8 +54,7 @@ function Settings() {
       label: "Google Gemini API Key",
       value: geminiKey,
       placeholder: "AIzaSy...",
-      onChange: (val) => {
-        setGeminiKey(val);
+      onChange: function(val) {
         plugin.storage.geminiKey = val;
       }
     }),
@@ -62,8 +62,7 @@ function Settings() {
       label: "OpenAI API Key (Optional)",
       value: openAiKey,
       placeholder: "sk-...",
-      onChange: (val) => {
-        setOpenAiKey(val);
+      onChange: function(val) {
         plugin.storage.openAiKey = val;
       }
     }),
@@ -71,14 +70,12 @@ function Settings() {
       label: "Active Provider (gemini or openai)",
       value: provider,
       placeholder: "gemini",
-      onChange: (val) => {
-        const p = val.toLowerCase();
-        setProvider(p);
-        plugin.storage.provider = p;
+      onChange: function(val) {
+        plugin.storage.provider = val ? val.toLowerCase() : "gemini";
       }
     })
   );
-}let unregister = null;
+}var unregister = null;
 
 var index = {
   onLoad: function() {
@@ -93,8 +90,14 @@ var index = {
           { name: "action", description: "Mode (ask, summarize, translate)", type: 3, required: false, choices: [ { name: "Ask", value: "ask" }, { name: "Summarize", value: "summarize" }, { name: "Translate", value: "translate" } ] }
         ],
         execute: function(args) {
-          const textArg = args.find(function(a) { return a.name === "text"; })?.value;
-          const actionArg = args.find(function(a) { return a.name === "action"; })?.value || "ask";
+          var textArg = "";
+          var actionArg = "ask";
+          if (args && args.length) {
+            for (var i = 0; i < args.length; i++) {
+              if (args[i].name === "text") textArg = args[i].value;
+              if (args[i].name === "action") actionArg = args[i].value;
+            }
+          }
           return askAI(textArg, actionArg)
             .then(function(result) {
               return { content: "**[AI " + actionArg.toUpperCase() + "]:**\n" + result };
@@ -104,9 +107,9 @@ var index = {
             });
         }
       });
-      toasts.showToast("AI Assistant Loaded!", "success");
+      if (toasts.showToast) toasts.showToast("AI Assistant Loaded!", "success");
     } catch (e) {
-      toasts.showToast("Load Error: " + e.message, "error");
+      if (toasts.showToast) toasts.showToast("Load Error: " + e.message, "error");
     }
   },
   onUnload: function() {

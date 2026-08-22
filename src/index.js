@@ -3,7 +3,7 @@ import { showToast } from "@vendetta/ui/toasts";
 import { askAI } from "./ai";
 import Settings from "./Settings";
 
-let unregister = null;
+var unregister = null;
 
 export default {
   onLoad: function() {
@@ -18,8 +18,14 @@ export default {
           { name: "action", description: "Mode (ask, summarize, translate)", type: 3, required: false, choices: [ { name: "Ask", value: "ask" }, { name: "Summarize", value: "summarize" }, { name: "Translate", value: "translate" } ] }
         ],
         execute: function(args) {
-          const textArg = args.find(function(a) { return a.name === "text"; })?.value;
-          const actionArg = args.find(function(a) { return a.name === "action"; })?.value || "ask";
+          var textArg = "";
+          var actionArg = "ask";
+          if (args && args.length) {
+            for (var i = 0; i < args.length; i++) {
+              if (args[i].name === "text") textArg = args[i].value;
+              if (args[i].name === "action") actionArg = args[i].value;
+            }
+          }
           return askAI(textArg, actionArg)
             .then(function(result) {
               return { content: "**[AI " + actionArg.toUpperCase() + "]:**\n" + result };
@@ -29,9 +35,9 @@ export default {
             });
         }
       });
-      showToast("AI Assistant Loaded!", "success");
+      if (showToast) showToast("AI Assistant Loaded!", "success");
     } catch (e) {
-      showToast("Load Error: " + e.message, "error");
+      if (showToast) showToast("Load Error: " + e.message, "error");
     }
   },
   onUnload: function() {

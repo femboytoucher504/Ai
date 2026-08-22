@@ -2,12 +2,13 @@ import { storage } from "@vendetta/plugin";
 import { Forms } from "@vendetta/ui/components";
 import { React } from "@vendetta/metro/common";
 
-const { FormSection, FormInput } = Forms;
-
 export default function Settings() {
-  const [geminiKey, setGeminiKey] = React.useState(storage.geminiKey || "");
-  const [openAiKey, setOpenAiKey] = React.useState(storage.openAiKey || "");
-  const [provider, setProvider] = React.useState(storage.provider || "gemini");
+  var geminiKey = storage.geminiKey || "";
+  var openAiKey = storage.openAiKey || "";
+  var provider = storage.provider || "gemini";
+
+  var FormSection = (Forms && Forms.FormSection) ? Forms.FormSection : function(p) { return p.children; };
+  var FormInput = (Forms && Forms.FormInput) ? Forms.FormInput : function() { return null; };
 
   return React.createElement(
     FormSection,
@@ -16,8 +17,7 @@ export default function Settings() {
       label: "Google Gemini API Key",
       value: geminiKey,
       placeholder: "AIzaSy...",
-      onChange: (val) => {
-        setGeminiKey(val);
+      onChange: function(val) {
         storage.geminiKey = val;
       }
     }),
@@ -25,8 +25,7 @@ export default function Settings() {
       label: "OpenAI API Key (Optional)",
       value: openAiKey,
       placeholder: "sk-...",
-      onChange: (val) => {
-        setOpenAiKey(val);
+      onChange: function(val) {
         storage.openAiKey = val;
       }
     }),
@@ -34,10 +33,8 @@ export default function Settings() {
       label: "Active Provider (gemini or openai)",
       value: provider,
       placeholder: "gemini",
-      onChange: (val) => {
-        const p = val.toLowerCase();
-        setProvider(p);
-        storage.provider = p;
+      onChange: function(val) {
+        storage.provider = val ? val.toLowerCase() : "gemini";
       }
     })
   );
