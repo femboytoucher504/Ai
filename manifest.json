@@ -1,7 +1,7 @@
 {
-  "name": "Minimal Test",
-  "description": "Bare minimum test plugin",
+  "name": "AI Assistant",
+  "description": "AI prompt, summary, and translation tool",
   "authors": [{ "name": "Hasan", "id": "0" }],
   "main": "index.js",
-  "hash": "93ac29e0e41a2ae493b62bda340b9312e3603d7afda5b713df57e61d50bbe13b"
+  "hash": "f2b34da4f458008353bcccd9208c541f88da09815f4f3afa5dcbd48845d2fbd1"
 }

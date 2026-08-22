@@ -34,4 +34,4 @@ var revengePlugin = (() => {
   };
   return __toCommonJS(index_exports);
 })();
-revengePlugin;
+revengePlugin.default;
