@@ -141,4 +141,4 @@ var revengePlugin = (() => {
   };
   return __toCommonJS(index_exports);
 })();
-if(typeof module!=='undefined'&&module.exports)module.exports=revengePlugin;
+revengePlugin;
