@@ -3,5 +3,6 @@
   "description": "AI prompt, summary, and translation tool",
   "authors": [{ "name": "Hasan", "id": "0" }],
   "main": "index.js",
+  "version": "1.0.0",
   "hash": "9f362ea90d99002815c89213c90e71e7ae279e413d4960ebfeab5e01f688e0b0"
 }
