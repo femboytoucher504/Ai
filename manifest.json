@@ -1,10 +1,10 @@
 {
   "name": "AI Assistant",
-  "description": "Summarize, translate, or chat with OpenAI and Gemini directly inside Discord.",
+  "description": "AI prompt, summary, and translation tool",
   "authors": [
     {
-      "name": "femboytoucher504",
-      "id": "123456789"
+      "name": "Hasan",
+      "id": "0"
     }
   ],
   "main": "index.js",
