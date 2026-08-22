@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "build": "rollup -c && node -e 'const fs=require(\"fs\"),c=require(\"crypto\");const h=c.createHash(\"sha256\").update(fs.readFileSync(\"dist/index.js\")).digest(\"hex\");const m=JSON.parse(fs.readFileSync(\"manifest.json\"));m.hash=h;fs.writeFileSync(\"manifest.json\",JSON.stringify(m,null,2));console.log(\"Updated hash:\",h);'"
+    "build": "rollup -c && node -e 'const fs=require(\"fs\"),c=require(\"crypto\");const h=c.createHash(\"sha256\").update(fs.readFileSync(\"index.js\")).digest(\"hex\");const m=JSON.parse(fs.readFileSync(\"manifest.json\"));m.hash=h;fs.writeFileSync(\"manifest.json\",JSON.stringify(m,null,2));console.log(\"Hashed index.js:\",h);'"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.0",

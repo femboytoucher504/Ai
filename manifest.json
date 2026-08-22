@@ -7,6 +7,6 @@
       "id": "123456789"
     }
   ],
-  "main": "dist/index.js",
-  "hash": "3bb51145d3a6236481f794b9b1221f5e97774e8c894dfe3d3afb8813dca081ac"
+  "main": "index.js",
+  "hash": "b82aedc524b3c3e16d88d61ab6d12efb96e4410a6ac2c8ba03342e5297732fe0"
 }
